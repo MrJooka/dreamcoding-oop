@@ -36,7 +36,21 @@
   }
 
   const maker = CoffeeMaker.makeMachine(2);
-  console.log(maker);
   maker.fillCoffeeBeans(39);
-  console.log(maker);
+
+  class User {
+    firstName: string;
+    lastName: string;
+    get fullName(): string {
+      return `${this.firstName} ${this.lastName}`;
+    }
+    constructor(firstName: string, lastName: string) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+    }
+  }
+  const user = new User('Jooka', 'Awsome');
+  console.log(user.fullName);
+  user.firstName = 'JK';
+  console.log(user.fullName);
 }
