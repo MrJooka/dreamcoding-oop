@@ -4,7 +4,10 @@
     hasMilk: boolean;
   };
 
-  class CoffeeMaker {
+  interface CoffeeMaker {
+    makeCoffee(shots: number): CoffeeCup;
+  }
+  class CoffeeMachine implements CoffeeMaker {
     private static BEANS_GRAM_PER_SHOT: number = 7;
     private coffeeBeans: number = 0;
 
@@ -12,8 +15,8 @@
       this.coffeeBeans = coffeeBeans;
     }
 
-    static makeMachine(coffeeBeans: number): CoffeeMaker {
-      return new CoffeeMaker(coffeeBeans);
+    static makeMachine(coffeeBeans: number): CoffeeMachine {
+      return new CoffeeMachine(coffeeBeans);
     }
 
     fillCoffeeBeans(beans: number) {
@@ -24,10 +27,10 @@
     }
     private grindBeans(shots: number) {
       console.log(`grinding beans for ${shots}`);
-      if (this.coffeeBeans < shots * CoffeeMaker.BEANS_GRAM_PER_SHOT) {
+      if (this.coffeeBeans < shots * CoffeeMachine.BEANS_GRAM_PER_SHOT) {
         throw new Error('Not enoght coffee beans!');
       }
-      this.coffeeBeans -= shots * CoffeeMaker.BEANS_GRAM_PER_SHOT;
+      this.coffeeBeans -= shots * CoffeeMachine.BEANS_GRAM_PER_SHOT;
     }
     private preheat(): void {
       console.log('heating up...🔥🔥🔥');
@@ -43,17 +46,13 @@
       this.grindBeans(shots);
       this.preheat();
       return this.extract(shots);
-      // if (this.coffeeBeans < shots * CoffeeMaker.BEANS_GRAM_PER_SHOT) {
-      //   throw new Error('Not enough coffee beans!');
-      // }
-      // this.coffeeBeans -= shots * CoffeeMaker.BEANS_GRAM_PER_SHOT;
-      // return {
-      //   shots: shots,
-      //   hasMilk: false,
-      // };
     }
   }
 
-  const maker = CoffeeMaker.makeMachine(2);
+  const maker: CoffeeMachine = CoffeeMachine.makeMachine(2);
   maker.fillCoffeeBeans(39);
+  maker.makeCoffee(2);
+  // 커피메이커 인터페이스에는 fillCoffeeBeans 메서드가 존재하지 않는다
+  const maker2: CoffeeMaker = CoffeeMachine.makeMachine(2);
+  maker2.makeCoffee(0);
 }
