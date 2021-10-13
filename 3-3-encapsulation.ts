@@ -56,6 +56,5 @@
   }
   const user = new User('Jooka', 'Awsome');
   console.log(user.fullName);
-  user.firstName = 'JK';
   console.log(user.fullName);
 }
