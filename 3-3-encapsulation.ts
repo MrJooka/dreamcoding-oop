@@ -39,15 +39,20 @@
   maker.fillCoffeeBeans(39);
 
   class User {
-    firstName: string;
-    lastName: string;
     get fullName(): string {
       return `${this.firstName} ${this.lastName}`;
     }
-    constructor(firstName: string, lastName: string) {
-      this.firstName = firstName;
-      this.lastName = lastName;
+    private internalAge = 4;
+    get age(): number {
+      return this.internalAge;
     }
+    set age(num: number) {
+      if (num < 0) {
+        throw new Error('parameter should be greater than 0');
+      }
+      this.internalAge = num;
+    }
+    constructor(private firstName: string, private lastName: string) {}
   }
   const user = new User('Jooka', 'Awsome');
   console.log(user.fullName);
