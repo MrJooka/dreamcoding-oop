@@ -7,7 +7,12 @@
   interface CoffeeMaker {
     makeCoffee(shots: number): CoffeeCup;
   }
-  class CoffeeMachine implements CoffeeMaker {
+  interface CommercialCoffeeMaker {
+    makeCoffee(shots: number): CoffeeCup;
+    fillCoffeeBeans(shots: number): void;
+    clean(): void;
+  }
+  class CoffeeMachine implements CoffeeMaker, CommercialCoffeeMaker {
     private static BEANS_GRAM_PER_SHOT: number = 7;
     private coffeeBeans: number = 0;
 
@@ -24,6 +29,9 @@
         throw new Error('parameter should be greater thhan 0');
       }
       this.coffeeBeans += beans;
+    }
+    clean() {
+      console.log('Cleaning the machine 🧺🧽🧴🧹');
     }
     private grindBeans(shots: number) {
       console.log(`grinding beans for ${shots}`);
@@ -49,10 +57,28 @@
     }
   }
 
-  const maker: CoffeeMachine = CoffeeMachine.makeMachine(2);
-  maker.fillCoffeeBeans(39);
-  maker.makeCoffee(2);
-  // 커피메이커 인터페이스에는 fillCoffeeBeans 메서드가 존재하지 않는다
-  const maker2: CoffeeMaker = CoffeeMachine.makeMachine(2);
-  maker2.makeCoffee(0);
+  class AmateurUser {
+    constructor(private machine: CoffeeMaker) {}
+    makeCoffee() {
+      const coffee = this.machine.makeCoffee(2);
+      console.log(coffee);
+    }
+  }
+
+  class ProBarista {
+    constructor(private machine: CommercialCoffeeMaker) {}
+    makeCoffee() {
+      const coffee = this.machine.makeCoffee(2);
+      console.log(coffee);
+      this.machine.fillCoffeeBeans(45);
+      this.machine.clean();
+    }
+  }
+
+  const maker: CoffeeMachine = CoffeeMachine.makeMachine(32);
+  const amateur = new AmateurUser(maker);
+  const pro = new ProBarista(maker);
+  amateur.makeCoffee();
+  console.log('중간');
+  pro.makeCoffee();
 }
