@@ -23,22 +23,22 @@
 
     fillCoffeeBeans(beans: number) {
       if (beans < 0) {
-        throw new Error('parameter should be greater thhan 0');
+        throw new Error("parameter should be greater thhan 0");
       }
       this.coffeeBeans += beans;
     }
     clean() {
-      console.log('Cleaning the machine 🧺🧽🧴🧹');
+      console.log("Cleaning the machine 🧺🧽🧴🧹");
     }
     private grindBeans(shots: number) {
       console.log(`grinding beans for ${shots}`);
       if (this.coffeeBeans < shots * CoffeeMachine.BEANS_GRAM_PER_SHOT) {
-        throw new Error('Not enoght coffee beans!');
+        throw new Error("Not enoght coffee beans!");
       }
       this.coffeeBeans -= shots * CoffeeMachine.BEANS_GRAM_PER_SHOT;
     }
     private preheat(): void {
-      console.log('heating up...🔥🔥🔥');
+      console.log("heating up...🔥🔥🔥");
     }
     private extract(shots: number): CoffeeCup {
       console.log(`Pulling down ${shots}...☕☕☕☕`);
@@ -54,45 +54,69 @@
     }
   }
 
-  class CaffeLatteMachine extends CoffeeMachine {
-    constructor(beans: number, public readonly serialNumber: string) {
-      super(beans);
-    }
+  // 싸구려 우유 거품기
+  class CheapMilkSteamer {
     private steamMilk(): void {
-      console.log('Steaming some milk... 🥛🥛');
+      console.log("Steaming some milk... 🥛🥛");
     }
-    makeCoffee(shots: number): CoffeeCup {
-      const coffee = super.makeCoffee(shots);
+    makeMilk(cup: CoffeeCup): CoffeeCup {
       this.steamMilk();
       return {
-        ...coffee,
+        ...cup,
         hasMilk: true,
       };
     }
   }
 
-  class SweetCoffeeMaker extends CoffeeMachine {
-    makeCoffee(shots: number): CoffeeCup {
-      const coffee = super.makeCoffee(shots);
-      return { ...coffee, hasSugar: true };
+  // 설탕 제조기
+  class AutomaticSugarMixer {
+    private getSugar() {
+      console.log("Getting some sugar from jar..🥃🥃🥃");
+      return true;
+    }
+
+    addSugar(cup: CoffeeCup): CoffeeCup {
+      const sugar = this.getSugar();
+      return {
+        ...cup,
+        hasSugar: sugar,
+      };
     }
   }
-  const machines: CoffeeMaker[] = [
-    new CoffeeMachine(15),
-    new CaffeLatteMachine(13, 'sererial'),
-    new SweetCoffeeMaker(29),
-    new CoffeeMachine(15),
-    new CaffeLatteMachine(13, 'sererial'),
-    new SweetCoffeeMaker(29),
-    new CoffeeMachine(15),
-    new CaffeLatteMachine(13, 'sererial'),
-    new SweetCoffeeMaker(29),
-    new CoffeeMachine(15),
-    new CaffeLatteMachine(13, 'sererial'),
-    new SweetCoffeeMaker(29),
-  ];
-  machines.forEach((machine) => {
-    console.log('-----------------------------------------');
-    machine.makeCoffee(1);
-  });
+  class CaffeLatteMachine extends CoffeeMachine {
+    constructor(
+      beans: number,
+      public readonly serialNumber: string,
+      private milkForther: CheapMilkSteamer // dependency injection
+    ) {
+      super(beans);
+    }
+
+    makeCoffee(shots: number): CoffeeCup {
+      const coffee = super.makeCoffee(shots);
+      return this.milkForther.makeMilk(coffee);
+    }
+  }
+
+  class SweetCoffeeMaker extends CoffeeMachine {
+    constructor(private beans: number, private sugar: AutomaticSugarMixer) {
+      super(beans);
+    }
+
+    makeCoffee(shots: number): CoffeeCup {
+      const coffee = super.makeCoffee(shots);
+      return this.sugar.addSugar(coffee);
+    }
+  }
+
+  class SweetCaffeLatteMachine extends CoffeeMachine {
+    constructor(private beans: number, private sugar: AutomaticSugarMixer, private milk: CheapMilkSteamer) {
+      super(beans);
+    }
+    makeCoffee(shots: number): CoffeeCup {
+      const coffee = super.makeCoffee(shots);
+      const milkForthered = this.milk.makeMilk(coffee);
+      return this.sugar.addSugar(milkForthered);
+    }
+  }
 }
